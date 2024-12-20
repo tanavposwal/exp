@@ -1,0 +1,117 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { saveTransaction } from '@/utils/dataManager'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
+
+const categories = [
+  { name: 'Food', emoji: '🍔' },
+  { name: 'Transport', emoji: '🚗' },
+  { name: 'Housing', emoji: '🏠' },
+  { name: 'Entertainment', emoji: '🎉' },
+  { name: 'Shopping', emoji: '🛍️' },
+  { name: 'Health', emoji: '🏥' },
+  { name: 'Education', emoji: '📚' },
+  { name: 'Other', emoji: '💼' },
+]
+
+interface AddTransactionFormProps {
+  type: 'expense' | 'income'
+  onClose: () => void
+}
+
+export default function AddTransactionForm({ type, onClose }: AddTransactionFormProps) {
+  const [title, setTitle] = useState('')
+  const [amount, setAmount] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [date, setDate] = useState<Date>(new Date())
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    saveTransaction({
+      type,
+      title,
+      amount: parseFloat(amount),
+      category: selectedCategory,
+      date: date.toISOString(),
+    })
+    onClose()
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <Label htmlFor="title" className="text-lg font-medium">Title</Label>
+        <Input 
+          id="title" 
+          value={title} 
+          onChange={(e) => setTitle(e.target.value)} 
+          required 
+          className="mt-1 text-lg py-3"
+        />
+      </div>
+      <div>
+        <Label htmlFor="amount" className="text-lg font-medium">Amount</Label>
+        <Input 
+          id="amount" 
+          type="number" 
+          value={amount} 
+          onChange={(e) => setAmount(e.target.value)} 
+          required 
+          className="mt-1 text-lg py-3"
+        />
+      </div>
+      <div>
+        <Label className="text-lg font-medium">Category</Label>
+        <div className="grid grid-cols-4 gap-3 mt-2">
+          {categories.map((category) => (
+            <Button
+              key={category.name}
+              type="button"
+              variant={selectedCategory === category.name ? 'default' : 'outline'}
+              onClick={() => setSelectedCategory(category.name)}
+              className="flex flex-col items-center p-3 h-auto apple-button"
+            >
+              <img 
+                src={`https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${category.emoji.codePointAt(0)?.toString(16)}.png`} 
+                alt={category.name} 
+                className="w-10 h-10 mb-2"
+              />
+              <span className="text-xs">{category.name}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <Label className="text-lg font-medium">Date</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={`w-full justify-start text-left font-normal mt-1 text-lg py-3`}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(newDate) => newDate && setDate(newDate)}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      <Button type="submit" className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg apple-button">
+        Add {type === 'expense' ? 'Expense' : 'Income'}
+      </Button>
+    </form>
+  )
+}
+

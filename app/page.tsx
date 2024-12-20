@@ -1,101 +1,110 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Filter, Pencil, Trash2 } from 'lucide-react'
+import { getTransactions, Transaction, deleteTransaction } from '@/utils/dataManager'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import EditTransactionForm from '@/components/EditTransactionForm'
+import { format } from 'date-fns'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  useEffect(() => {
+    setTransactions(getTransactions())
+  }, [])
+
+  const thisMonthExpense = transactions
+    .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === new Date().getMonth())
+    .reduce((sum, t) => sum + t.amount, 0)
+
+  const thisMonthEarning = transactions
+    .filter(t => t.type === 'income' && new Date(t.date).getMonth() === new Date().getMonth())
+    .reduce((sum, t) => sum + t.amount, 0)
+
+  const handleDelete = (id: string) => {
+    deleteTransaction(id)
+    setTransactions(getTransactions())
+  }
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction)
+  }
+
+  const handleEditComplete = () => {
+    setEditingTransaction(null)
+    setTransactions(getTransactions())
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-center mt-8 mb-6">Expense Tracker</h1>
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="apple-card">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold mb-2">Expenses</h2>
+            <p className="text-3xl font-bold text-red-500">${thisMonthExpense.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card className="apple-card">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold mb-2">Income</h2>
+            <p className="text-3xl font-bold text-green-500">${thisMonthEarning.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+      </div>
+      <Button asChild variant="outline" className="w-full apple-button">
+        <Link href="/filter-tags">
+          <Filter className="mr-2 h-4 w-4" /> Filter Transactions
+        </Link>
+      </Button>
+      <Card className="apple-card">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
+          <ul className="space-y-4">
+            {transactions.slice(0, 10).map(transaction => (
+              <li key={transaction.id} className="flex justify-between items-center border-b pb-2">
+                <div>
+                  <p className="font-medium">{transaction.title}</p>
+                  <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                  <p className="text-xs text-muted-foreground">{format(new Date(transaction.date), 'MMM d, yyyy')}</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className={`font-semibold ${transaction.type === 'expense' ? 'text-red-500' : 'text-green-500'}`}>
+                    ${transaction.amount.toFixed(2)}
+                  </span>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(transaction)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Transaction</DialogTitle>
+                      </DialogHeader>
+                      {editingTransaction && (
+                        <EditTransactionForm
+                          transaction={editingTransaction}
+                          onComplete={handleEditComplete}
+                        />
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(transaction.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
+
