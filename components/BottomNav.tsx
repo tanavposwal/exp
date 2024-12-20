@@ -22,7 +22,7 @@ export default function BottomNav() {
       <div className="px-2">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg apple-button">
+            <Button className="py-6 text-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:to-blue-600 hover:from-blue-600 text-white shadow">
               <PlusCircle className="mr-2 h-6 w-6" />
               Add Transaction
             </Button>

@@ -75,7 +75,7 @@ export default function AddTransactionForm({ type, onClose }: AddTransactionForm
               type="button"
               variant={selectedCategory === category.name ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category.name)}
-              className="flex flex-col items-center p-3 h-auto apple-button"
+              className="flex flex-col items-center p-3 h-auto"
             >
               <img 
                 src={`https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${category.emoji.codePointAt(0)?.toString(16)}.png`} 
@@ -109,7 +109,7 @@ export default function AddTransactionForm({ type, onClose }: AddTransactionForm
           </PopoverContent>
         </Popover>
       </div>
-      <Button type="submit" className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg apple-button font-bold mt-3">
+      <Button type="submit" className="py-6 text-lg bg-gradient-to-br from-green-500 to-green-600 hover:to-green-600 hover:from-green-600 text-white shadow mt-4">
         Add {type === 'expense' ? 'Expense' : 'Income'}
       </Button>
     </form>

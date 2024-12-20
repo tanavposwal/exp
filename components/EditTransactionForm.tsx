@@ -37,30 +37,30 @@ export default function EditTransactionForm({ transaction, onComplete }: EditTra
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
-        <Label htmlFor="title" className="text-lg font-medium">Title</Label>
+        <Label htmlFor="title" className="text-sm font-medium">Title</Label>
         <Input 
           id="title" 
           value={title} 
           onChange={(e) => setTitle(e.target.value)} 
           required 
-          className="mt-1 text-lg py-3"
+          className="text-md py-2" 
         />
       </div>
       <div>
-        <Label htmlFor="amount" className="text-lg font-medium">Amount</Label>
+        <Label htmlFor="amount" className="text-sm font-medium">Amount</Label>
         <Input 
           id="amount" 
           type="number" 
           value={amount} 
           onChange={(e) => setAmount(e.target.value)} 
           required 
-          className="mt-1 text-lg py-3"
+          className="text-md py-2"
         />
       </div>
       <div>
-        <Label className="text-lg font-medium">Category</Label>
+        <Label className="text-sm font-medium">Category</Label>
         <div className="grid grid-cols-4 gap-3 mt-2">
           {categories.map((category) => (
             <Button
@@ -68,19 +68,19 @@ export default function EditTransactionForm({ transaction, onComplete }: EditTra
               type="button"
               variant={selectedCategory === category.name ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category.name)}
-              className="flex flex-col items-center p-3 h-auto apple-button"
+              className="flex flex-col items-center p-3 h-auto"
             >
               <img 
                 src={`https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${category.emoji.codePointAt(0)?.toString(16)}.png`} 
                 alt={category.name} 
-                className="w-10 h-10 mb-2"
+                className="w-10 h-10 mb-1"
               />
-              <span className="text-xs">{category.name}</span>
+              <span className="text-xs scale-90">{category.name}</span>
             </Button>
           ))}
         </div>
       </div>
-      <Button type="submit" className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg apple-button">
+      <Button type="submit" className="py-6 text-lg bg-gradient-to-br from-green-500 to-green-600 hover:to-green-600 hover:from-green-600 text-white shadow mt-4">
         Save Changes
       </Button>
     </form>
