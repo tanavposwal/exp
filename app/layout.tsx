@@ -16,9 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} min-h-screen`}>
-        <div className="max-w-md mx-auto p-4 pb-24">
-          {children}
+      <body className={`${inter.className} h-screen max-w-md mx-auto dark`}>
+        <div className="p-4">
+        {children}
         </div>
         <BottomNav />
       </body>

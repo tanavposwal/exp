@@ -60,8 +60,8 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-6 min-h-screen overflow-x-auto">
-      <div className="flex items-center justify-center gap-4 h-72">
+    <div className="min-h-screen space-y-4 gap-2 overflow-x-auto">
+      <div className="flex items-center justify-center gap-4 py-16">
         <Card className="apple-card flex-1">
           <CardContent className="p-6">
             <h2 className="text-sm font-semibold mb-2">Expenses</h2>
@@ -84,7 +84,7 @@ export default function Home() {
           <Filter className="mr-2 h-4 w-4" /> Filter Transactions
         </Link>
       </Button>
-      <div className="p-4 bg-card rounded-lg shadow-md">
+      <div className="py-3">
         <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
         <ul className="space-y-4">
           {transactions.slice(0, 10).map((transaction) => (

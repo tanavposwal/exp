@@ -18,7 +18,7 @@ export default function BottomNav() {
   }
 
   return (
-    <div className="fixed max-w-md mx-auto bottom-6 left-0 right-0">
+    <div className="fixed max-w-md mx-auto bottom-6">
       <div className="px-2">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -30,8 +30,8 @@ export default function BottomNav() {
           <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl overflow-y-auto scrollbar-none">
             <Tabs defaultValue="expense" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="expense" className="text-sm py-1">Expense</TabsTrigger>
-                <TabsTrigger value="income" className="text-sm py-1">Income</TabsTrigger>
+                <TabsTrigger value="expense" className="text-sm py-2">Expense</TabsTrigger>
+                <TabsTrigger value="income" className="text-sm py-2">Income</TabsTrigger>
               </TabsList>
               <TabsContent value="expense">
                 <AddTransactionForm type="expense" onClose={handleClose} />
