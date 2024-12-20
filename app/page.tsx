@@ -41,23 +41,22 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-center mt-8 mb-6">Expense Tracker</h1>
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="apple-card">
+    <div className="space-y-6 min-h-screen overflow-x-auto">
+      <div className="flex items-center justify-center gap-4 h-72">
+        <Card className="apple-card flex-1">
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold mb-2">Expenses</h2>
             <p className="text-3xl font-bold text-red-500">${thisMonthExpense.toFixed(2)}</p>
           </CardContent>
         </Card>
-        <Card className="apple-card">
+        <Card className="apple-card flex-1">
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold mb-2">Income</h2>
             <p className="text-3xl font-bold text-green-500">${thisMonthEarning.toFixed(2)}</p>
           </CardContent>
         </Card>
       </div>
-      <Button asChild variant="outline" className="w-full apple-button">
+      <Button asChild variant="ghost">
         <Link href="/filter-tags">
           <Filter className="mr-2 h-4 w-4" /> Filter Transactions
         </Link>

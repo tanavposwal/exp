@@ -18,8 +18,8 @@ export default function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-6 left-0 right-0">
-      <div className="max-w-md mx-auto px-4">
+    <div className="fixed max-w-md mx-auto bottom-6 left-0 right-0">
+      <div className="px-2">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg apple-button">
@@ -27,11 +27,11 @@ export default function BottomNav() {
               Add Transaction
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl">
+          <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl overflow-y-auto scrollbar-none">
             <Tabs defaultValue="expense" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="expense" className="text-lg py-3">Expense</TabsTrigger>
-                <TabsTrigger value="income" className="text-lg py-3">Income</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="expense" className="text-sm py-1">Expense</TabsTrigger>
+                <TabsTrigger value="income" className="text-sm py-1">Income</TabsTrigger>
               </TabsList>
               <TabsContent value="expense">
                 <AddTransactionForm type="expense" onClose={handleClose} />
