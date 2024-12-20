@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Filter, Pencil, Trash2 } from "lucide-react";
+import { EllipsisVerticalIcon, Filter } from "lucide-react";
 import {
   getTransactions,
   Transaction,
@@ -17,6 +17,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import EditTransactionForm from "@/components/EditTransactionForm";
 import { format } from "date-fns";
 
@@ -61,7 +68,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen space-y-4 gap-2 overflow-x-auto">
-      <div className="flex items-center justify-center gap-4 py-16">
+      <div className="flex items-center justify-center gap-4 py-2">
         <Card className="apple-card flex-1">
           <CardContent className="p-6">
             <h2 className="text-sm font-semibold mb-2">Expenses</h2>
@@ -94,8 +101,10 @@ export default function Home() {
             >
               <div>
                 <div className="flex gap-2 items-center">
-                <p className="font-medium">{transaction.title}</p>
-                <p className="text-xs text-muted-foreground">{transaction.category}</p>
+                  <p className="font-medium">{transaction.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {transaction.category}
+                  </p>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {format(new Date(transaction.date), "MMM d, yyyy")}
@@ -111,40 +120,68 @@ export default function Home() {
                 >
                   ${transaction.amount.toFixed(2)}
                 </span>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(transaction)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit Transaction</DialogTitle>
-                    </DialogHeader>
-                    {editingTransaction && (
-                      <EditTransactionForm
-                        transaction={editingTransaction}
-                        onComplete={handleEditComplete}
-                      />
-                    )}
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(transaction.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"} size={"icon"}><EllipsisVerticalIcon /></Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left">
+                    <DropdownMenuLabel asChild>
+                      {editDialog({
+                        transaction,
+                        handleEdit,
+                        handleEditComplete,
+                        editingTransaction,
+                      })}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full cursor-pointer justify-start pl-4"
+                        onClick={() => handleDelete(transaction.id)}
+                      >
+                        Delete
+                      </Button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </li>
           ))}
         </ul>
       </div>
     </div>
+  );
+}
+
+function editDialog({
+  transaction,
+  handleEdit,
+  editingTransaction,
+  handleEditComplete,
+}: any) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          className="w-full cursor-pointer justify-start"
+          onClick={() => handleEdit(transaction)}
+        >
+          Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Transaction</DialogTitle>
+        </DialogHeader>
+        {editingTransaction && (
+          <EditTransactionForm
+            transaction={editingTransaction}
+            onComplete={handleEditComplete}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
