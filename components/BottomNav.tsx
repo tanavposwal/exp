@@ -27,7 +27,7 @@ export default function BottomNav() {
               Add Transaction
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl overflow-y-auto scrollbar-none">
+          <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto rounded-t-2xl overflow-y-auto scrollbar-none">
             <Tabs defaultValue="expense" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="expense" className="text-sm py-2">Expense</TabsTrigger>

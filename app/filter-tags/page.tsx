@@ -40,9 +40,9 @@ export default function FilterTags() {
 
   return (
     <div className="space-y-6">
-      <Card className="apple-card mt-8">
+      <Card className="apple-card">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Filter by Tags</CardTitle>
+          <CardTitle className="text-lg font-bold text-center">Filter by Tags</CardTitle>
         </CardHeader>
         <CardContent>
           <DropdownMenu>
@@ -75,15 +75,15 @@ export default function FilterTags() {
       </Card>
       <Card className="apple-card">
         <CardHeader>
-          <CardTitle className="text-xl font-bold">Filtered Transactions</CardTitle>
+          <CardTitle className="text-md font-medium">Filtered Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
             <p className="text-center text-muted-foreground">No transactions found</p>
           ) : (
-            <ul className="space-y-4">
+            <ul>
               {filteredTransactions.map(transaction => (
-                <li key={transaction.id} className="flex justify-between items-center border-b pb-2">
+                <li key={transaction.id} className="flex justify-between items-center border-b py-2">
                   <div>
                     <p className="font-medium">{transaction.title}</p>
                     <p className="text-sm text-muted-foreground">{transaction.category}</p>
