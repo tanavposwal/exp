@@ -13,6 +13,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,6 +27,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import EditTransactionForm from "@/components/EditTransactionForm";
 import { format } from "date-fns";
+import BottomNav from "@/components/BottomNav";
+import Expninc from "@/components/expninc";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -67,32 +71,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen space-y-4 gap-2 overflow-x-auto">
-      <div className="flex items-center justify-center gap-4 py-2">
-        <Card className="apple-card flex-1">
-          <CardContent className="p-6">
-            <h2 className="text-sm font-semibold mb-2">Expenses</h2>
-            <p className="text-2xl font-black text-red-500">
-              ${thisMonthExpense.toFixed(2)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="apple-card flex-1">
-          <CardContent className="p-6">
-            <h2 className="text-sm font-semibold mb-2">Income</h2>
-            <p className="text-2xl font-black text-green-500">
-              ${thisMonthEarning.toFixed(2)}
-            </p>
-          </CardContent>
-        </Card>
+    <div
+      className="min-h-screen 
+    flex flex-col gap-6 overflow-x-auto p-4"
+    >
+      <Expninc
+        thisMonthEarning={thisMonthEarning}
+        thisMonthExpense={thisMonthExpense}
+      />
+      <div>
+        <Button asChild variant="outline">
+          <Link href="/filter-tags">
+            <Filter className="mr-2 h-4 w-4" /> Filter Transactions
+          </Link>
+        </Button>
       </div>
-      <Button asChild variant="outline">
-        <Link href="/filter-tags">
-          <Filter className="mr-2 h-4 w-4" /> Filter Transactions
-        </Link>
-      </Button>
-      <div className="py-3">
-        <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
+      <div className="px-2">
+        <h2 className="text-lg font-semibold mb-4">Recent Transactions</h2>
         <ul className="">
           {transactions.slice(0, 10).map((transaction) => (
             <li
@@ -123,7 +118,9 @@ export default function Home() {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant={"ghost"} size={"icon"}><EllipsisVerticalIcon /></Button>
+                    <Button variant={"ghost"} size={"icon"}>
+                      <EllipsisVerticalIcon />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="left">
                     <DropdownMenuLabel asChild>
@@ -135,13 +132,10 @@ export default function Home() {
                       })}
                     </DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full cursor-pointer justify-start pl-4"
-                        onClick={() => handleDelete(transaction.id)}
-                      >
-                        Delete
-                      </Button>
+                      {deleteDialog({
+                        transaction,
+                        handleDelete,
+                      })}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -150,7 +144,42 @@ export default function Home() {
           ))}
         </ul>
       </div>
+      <BottomNav />
     </div>
+  );
+}
+
+function deleteDialog({ transaction, handleDelete }: any) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          className="w-full cursor-pointer justify-start"
+        >
+          Delete
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete Transaction</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+          Are you sure you want to delete this transaction?
+        </DialogDescription>
+        <DialogFooter className="flex flex-row gap-2 justify-end">
+          <Button>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleDelete(transaction.id)}
+            variant="outline"
+          >
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -39,7 +39,7 @@ export default function FilterTags() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <Card className="apple-card">
         <CardHeader>
           <CardTitle className="text-lg font-bold text-center">Filter by Tags</CardTitle>

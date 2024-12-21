@@ -18,16 +18,16 @@ export default function BottomNav() {
   }
 
   return (
-    <div className="fixed max-w-md mx-auto bottom-6">
-      <div className="px-2">
+    <div className="fixed max-w-md mx-auto bottom-3 left-3 right-3">
+      <div className="">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button size={"lg"}>
-              <PlusCircle className="mr-2 h-6 w-6" />
+            <Button className="py-6 text-lg bg-gradient-to-br from-neutral-300 to-neutral-400 text-black shadow mt-4 w-full">
+              <PlusCircle className="mr-1 h-8 w-8" />
               Add Transaction
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[90vh] max-w-md mx-auto rounded-t-2xl overflow-y-auto scrollbar-none">
+          <SheetContent side="bottom" className="h-[70vh] max-w-md mx-auto rounded-t-2xl overflow-y-auto scrollbar-none">
             <Tabs defaultValue="expense" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="expense" className="text-sm py-2">Expense</TabsTrigger>
