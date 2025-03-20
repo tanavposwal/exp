@@ -1,4 +1,7 @@
-import { Card, CardContent } from "./ui/card";
+import { Geist_Mono } from "next/font/google";
+import { ArrowUp } from "lucide-react";
+
+const mono = Geist_Mono({ subsets: ["latin"] });
 
 export default function Expninc({
   thisMonthExpense,
@@ -7,24 +10,18 @@ export default function Expninc({
   thisMonthExpense: number;
   thisMonthEarning: number;
 }) {
+  const total = thisMonthEarning - thisMonthExpense;
+
   return (
-    <div className="flex items-center justify-center gap-4 h-56">
-      <Card className="apple-card flex-1">
-        <CardContent className="p-6">
-          <h2 className="text-sm font-semibold mb-2">Expenses</h2>
-          <p className="text-2xl font-black text-red-500">
-            ${thisMonthExpense.toFixed(2)}
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="apple-card flex-1">
-        <CardContent className="p-6">
-          <h2 className="text-sm font-semibold mb-2">Income</h2>
-          <p className="text-2xl font-black text-green-500">
-            ${thisMonthEarning.toFixed(2)}
-          </p>
-        </CardContent>
-      </Card>
+    <div
+      className={`flex flex-col items-center justify-center gap-4 h-60 from-black/5 to-white bg-gradient-to-bl ${mono.className}`}>
+      <p className="text-md text-black/60 tracking-tight">Total balance</p>
+      <h2
+        className={`text-5xl font-semibold transition-all ${
+          total < 0 && "text-red-500"
+        }`}>
+        ${Math.abs(total)}
+      </h2>
     </div>
   );
 }

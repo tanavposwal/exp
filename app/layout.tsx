@@ -1,26 +1,23 @@
-import '@/app/globals.css'
-import { Inter } from 'next/font/google'
+import "@/app/globals.css";
+import { Geist } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] })
+const geist = Geist({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'Expense Tracker',
-  description: 'Track your expenses and earnings',
-}
+  title: "Expense Tracker",
+  description: "Track your expenses and earnings",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} max-w-md mx-auto dark`}>
-        <div>
-        {children}
-        </div>
+      <body className={`${geist.className} max-w-md h-screen mx-auto light`}>
+        <div className="w-full h-full">{children}</div>
       </body>
     </html>
-  )
+  );
 }
-

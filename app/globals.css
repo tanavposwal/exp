@@ -74,12 +74,3 @@
     @apply text-foreground bg-background;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}

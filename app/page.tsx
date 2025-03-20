@@ -71,92 +71,75 @@ export default function Home() {
   };
 
   return (
-    <div
-      className="min-h-screen 
-    flex flex-col gap-6 overflow-x-auto p-4"
-    >
+    <div className="h-full w-full flex flex-col gap-6">
       <Expninc
         thisMonthEarning={thisMonthEarning}
         thisMonthExpense={thisMonthExpense}
       />
-      <div>
-        <Button asChild variant="outline">
-          <Link href="/filter-tags">
-            <Filter className="mr-2 h-4 w-4" /> Filter Transactions
-          </Link>
-        </Button>
+      <div className="flex justify-between px-4">
+        <h2 className="text-lg font-semibold tracking-tight">
+          Recent Transactions
+        </h2>
+        <BottomNav />
       </div>
-      <div className="px-2">
-        <h2 className="text-lg font-semibold mb-4">Recent Transactions</h2>
-        <ul className="">
-          {transactions.slice(0, 10).map((transaction) => (
-            <li
-              key={transaction.id}
-              className="flex justify-between items-center border-b py-2"
-            >
-              <div>
-                <div className="flex gap-2 items-center">
-                  <p className="font-medium">{transaction.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {transaction.category}
-                  </p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(transaction.date), "MMM d, yyyy")}
-                </p>
+      <ul className="overflow-x-auto px-4">
+        {transactions.map((transaction) => (
+          <li
+            key={transaction.id}
+            className="flex justify-between items-center bg-accent/60 p-3 rounded-xl mb-2">
+            <div>
+              <div className="flex gap-1 items-center text-xs text-muted-foreground">
+                <p>{format(new Date(transaction.date), "MMM d, yyyy")}</p>
+                <p>•</p>
+                <p>{transaction.category}</p>
               </div>
-              <div className="flex items-center space-x-2">
-                <span
-                  className={`font-semibold mr-2 ${
-                    transaction.type === "expense"
-                      ? "text-red-500"
-                      : "text-green-500"
-                  }`}
-                >
-                  ${transaction.amount.toFixed(2)}
-                </span>
+              <p className="font-medium">{transaction.title}</p>
+            </div>
+            <div className="flex items-center">
+              <span
+                className={`font-semibold mr-2 ${
+                  transaction.type === "expense" && "text-red-500"
+                }`}>
+                ${transaction.amount.toFixed(2)}
+              </span>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant={"ghost"} size={"icon"}>
-                      <EllipsisVerticalIcon />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="left">
-                    <DropdownMenuLabel asChild>
-                      {editDialog({
-                        transaction,
-                        handleEdit,
-                        handleEditComplete,
-                        editingTransaction,
-                      })}
-                    </DropdownMenuLabel>
-                    <DropdownMenuItem asChild>
-                      {deleteDialog({
-                        transaction,
-                        handleDelete,
-                      })}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <BottomNav />
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <button>
+                    <EllipsisVerticalIcon className="h-4 w-4 outline-none" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="bottom">
+                  <DropdownMenuLabel asChild>
+                    {editDialog({
+                      transaction,
+                      handleEdit,
+                      handleEditComplete,
+                      editingTransaction,
+                    })}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild>
+                    {deleteDialog({
+                      transaction,
+                      handleDelete,
+                    })}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 function deleteDialog({ transaction, handleDelete }: any) {
   return (
-    <Dialog>
+    <Dialog modal={false}>
+      <DialogTitle className="sr-only">Delete!?</DialogTitle>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full cursor-pointer justify-start"
-        >
+        <Button variant="ghost" className="w-full cursor-pointer justify-start">
           Delete
         </Button>
       </DialogTrigger>
@@ -164,17 +147,12 @@ function deleteDialog({ transaction, handleDelete }: any) {
         <DialogHeader>
           <DialogTitle>Delete Transaction</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
-          Are you sure you want to delete this transaction?
-        </DialogDescription>
+        <DialogDescription>Are you sure?</DialogDescription>
         <DialogFooter className="flex flex-row gap-2 justify-end">
-          <Button>
-            Cancel
-          </Button>
+          <Button>Cancel</Button>
           <Button
             onClick={() => handleDelete(transaction.id)}
-            variant="outline"
-          >
+            variant="outline">
             Delete
           </Button>
         </DialogFooter>
@@ -195,8 +173,7 @@ function editDialog({
         <Button
           variant="ghost"
           className="w-full cursor-pointer justify-start"
-          onClick={() => handleEdit(transaction)}
-        >
+          onClick={() => handleEdit(transaction)}>
           Edit
         </Button>
       </DialogTrigger>
