@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { EllipsisVerticalIcon, Filter } from "lucide-react";
+import {
+  ArrowLeft,
+  EllipsisVerticalIcon,
+  Filter,
+  FilterIcon,
+} from "lucide-react";
 import {
   getTransactions,
   Transaction,
@@ -30,6 +35,7 @@ import { format } from "date-fns";
 import BottomNav from "@/components/BottomNav";
 import Expninc from "@/components/expninc";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import BackButton from "@/components/back-button";
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -80,7 +86,14 @@ export default function Home() {
         <h2 className="text-lg font-semibold tracking-tight">
           Recent Transactions
         </h2>
-        <BottomNav />
+        <div className="flex gap-1">
+          <Link
+            className="px-3 py-1 rounded-full bg-accent flex items-center"
+            href="/filter">
+            <FilterIcon className="h-4 w-4 text-black" />
+          </Link>
+          <BottomNav />
+        </div>
       </div>
       <ul className="overflow-x-auto px-4">
         {transactions.map((transaction) => (

@@ -52,7 +52,7 @@ export default function EditTransactionForm({
         />
       </div>
       <div>
-        <Label htmlFor="amount" className="text-sm font-medium">
+        <Label htmlFor="amount" className="text-xs font-medium">
           Amount
         </Label>
         <Input
@@ -65,7 +65,7 @@ export default function EditTransactionForm({
         />
       </div>
       <div>
-        <Label className="text-sm font-medium">Category</Label>
+        <Label className="text-xs font-medium">Category</Label>
         <div className="grid grid-cols-4 gap-2 mt-2">
           {categories.map((category) => (
             <Button

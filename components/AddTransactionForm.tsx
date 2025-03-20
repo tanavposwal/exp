@@ -49,7 +49,7 @@ export default function AddTransactionForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
-        <Label htmlFor="title" className="text-sm font-medium">
+        <Label htmlFor="title" className="text-xs font-medium">
           Title
         </Label>
         <Input
@@ -61,7 +61,7 @@ export default function AddTransactionForm({
         />
       </div>
       <div>
-        <Label htmlFor="amount" className="text-sm font-medium">
+        <Label htmlFor="amount" className="text-xs font-medium">
           Amount
         </Label>
         <Input
@@ -74,7 +74,7 @@ export default function AddTransactionForm({
         />
       </div>
       <div>
-        <Label className="text-sm font-medium">Category</Label>
+        <Label className="text-xs font-medium">Category</Label>
         <div className="grid grid-cols-4 gap-3 mt-2">
           {categories.map((category) => (
             <Button
@@ -98,7 +98,7 @@ export default function AddTransactionForm({
         </div>
       </div>
       <div>
-        <Label className="text-sm font-medium">Date</Label>
+        <Label className="text-xs font-medium">Date</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
