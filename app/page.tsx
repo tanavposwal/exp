@@ -168,7 +168,7 @@ function editDialog({
   handleEditComplete,
 }: any) {
   return (
-    <Dialog>
+    <Dialog modal={false}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
