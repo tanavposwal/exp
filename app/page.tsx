@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowLeft,
+  BrainCogIcon,
   EllipsisVerticalIcon,
   Filter,
   FilterIcon,
@@ -87,6 +88,11 @@ export default function Home() {
           Recent Transactions
         </h2>
         <div className="flex gap-1">
+          <Link
+            className="px-3 py-1 rounded-full bg-accent flex items-center"
+            href="/analysis">
+            <BrainCogIcon className="h-4 w-4 text-black" />
+          </Link>
           <Link
             className="px-3 py-1 rounded-full bg-accent flex items-center"
             href="/filter">
