@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { SignIn } from "@/components/sign-in";
 
 const mono = Geist_Mono({ subsets: ["latin"] });
 
@@ -52,48 +53,6 @@ export default function Analysis() {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const [openRouterApiKey, setOpenRouterApiKey] = useState<string>("");
-  const [openRouterApiKeyDraft, setOpenRouterApiKeyDraft] =
-    useState<string>("");
-  const [openRouterKeySavedAt, setOpenRouterKeySavedAt] = useState<
-    number | null
-  >(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("openrouter_api_key") || "";
-    setOpenRouterApiKey(saved);
-    setOpenRouterApiKeyDraft(saved);
-
-    const savedAtRaw = localStorage.getItem("openrouter_api_key_saved_at");
-    const savedAt = savedAtRaw ? Number(savedAtRaw) : null;
-    setOpenRouterKeySavedAt(Number.isFinite(savedAt) ? savedAt : null);
-  }, []);
-
-  const saveOpenRouterKey = () => {
-    const cleaned = openRouterApiKeyDraft.trim();
-    setOpenRouterApiKey(cleaned);
-
-    if (cleaned) {
-      const now = Date.now();
-      localStorage.setItem("openrouter_api_key", cleaned);
-      localStorage.setItem("openrouter_api_key_saved_at", String(now));
-      setOpenRouterKeySavedAt(now);
-      return;
-    }
-
-    localStorage.removeItem("openrouter_api_key");
-    localStorage.removeItem("openrouter_api_key_saved_at");
-    setOpenRouterKeySavedAt(null);
-  };
-
-  const clearOpenRouterKey = () => {
-    setOpenRouterApiKey("");
-    setOpenRouterApiKeyDraft("");
-    localStorage.removeItem("openrouter_api_key");
-    localStorage.removeItem("openrouter_api_key_saved_at");
-    setOpenRouterKeySavedAt(null);
-  };
 
   const [savedMessages, setSavedMessages] = useState<any[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -134,18 +93,20 @@ export default function Analysis() {
   const displayMessages = messages.length > 0 ? messages : savedMessages;
 
   const isLoading = status === "streaming" || status === "submitted";
-  const hasOpenRouterKey = openRouterApiKey.trim().length > 0;
 
   useEffect(() => {
     const txns = getTransactions();
     setTransactions(txns);
 
     // Calculate category data
-    const categoryMap = txns.reduce((acc, t) => {
-      if (!acc[t.category]) acc[t.category] = { expense: 0, income: 0 };
-      acc[t.category][t.type] += t.amount;
-      return acc;
-    }, {} as Record<string, { expense: number; income: number }>);
+    const categoryMap = txns.reduce(
+      (acc, t) => {
+        if (!acc[t.category]) acc[t.category] = { expense: 0, income: 0 };
+        acc[t.category][t.type] += t.amount;
+        return acc;
+      },
+      {} as Record<string, { expense: number; income: number }>,
+    );
 
     const totalExpense = txns
       .filter((t) => t.type === "expense")
@@ -168,15 +129,14 @@ export default function Analysis() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (input.trim() && status === "ready" && hasOpenRouterKey) {
+    if (input.trim() && status === "ready") {
       sendMessage(
         { text: input },
         {
           body: {
             transactions,
-            openRouterApiKey,
           },
-        }
+        },
       );
       setInput("");
       inputRef.current?.focus();
@@ -184,15 +144,14 @@ export default function Analysis() {
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
-    if (status === "ready" && hasOpenRouterKey) {
+    if (status === "ready") {
       sendMessage(
         { text: prompt },
         {
           body: {
             transactions,
-            openRouterApiKey,
           },
-        }
+        },
       );
     }
   };
@@ -230,51 +189,11 @@ export default function Analysis() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <KeyRoundIcon className="h-4 w-4 opacity-70" />
-                  OpenRouter API Key
+                  Secure Chatgpt OAuth
                 </DialogTitle>
-                <DialogDescription>
-                  Saved locally in this browser. Not synced.
-                </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-2">
-                <input
-                  type="password"
-                  value={openRouterApiKeyDraft}
-                  onChange={(e) => setOpenRouterApiKeyDraft(e.target.value)}
-                  placeholder="Paste your OpenRouter API key"
-                  className="w-full bg-background border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-
-                <p className="text-xs text-muted-foreground">
-                  {openRouterApiKey
-                    ? `Saved locally${openRouterKeySavedAt
-                      ? ` · updated ${new Date(
-                        openRouterKeySavedAt
-                      ).toLocaleString()}`
-                      : ""
-                    }`
-                    : "Not set yet"}
-                </p>
-              </div>
-
-              <DialogFooter className="flex flex-row gap-2 justify-end">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={clearOpenRouterKey}
-                  className="gap-2">
-                  <Trash2Icon className="h-4 w-4 opacity-70" />
-                  Clear
-                </Button>
-                <Button
-                  type="button"
-                  onClick={saveOpenRouterKey}
-                  className="gap-2">
-                  <KeyRoundIcon className="h-4 w-4" />
-                  Save
-                </Button>
-              </DialogFooter>
+              <SignIn />
             </DialogContent>
           </Dialog>
         </div>
@@ -292,7 +211,7 @@ export default function Analysis() {
                   <button
                     key={prompt}
                     onClick={() => handleSuggestedPrompt(prompt)}
-                    disabled={status !== "ready" || !hasOpenRouterKey}
+                    disabled={status !== "ready"}
                     className="text-xs px-3 py-1.5 bg-background hover:bg-background/80 rounded-full border border-border transition-colors disabled:opacity-50">
                     {prompt}
                   </button>
@@ -304,49 +223,64 @@ export default function Analysis() {
               {displayMessages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-                    }`}>
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}>
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2 ${message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background"
-                      }`}>
+                    className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background"
+                    }`}>
                     {message.role === "user" ? (
                       <p className="text-sm whitespace-pre-wrap">
                         {message.parts
                           .filter(
-                            (part: any): part is { type: "text"; text: string } =>
-                              part.type === "text"
+                            (
+                              part: any,
+                            ): part is { type: "text"; text: string } =>
+                              part.type === "text",
                           )
-                          .map((part: { type: "text"; text: string }) => part.text)
+                          .map(
+                            (part: { type: "text"; text: string }) => part.text,
+                          )
                           .join("")}
                       </p>
                     ) : (
                       <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
                         {message.parts
                           .filter(
-                            (part: any): part is { type: "text"; text: string } =>
-                              part.type === "text"
+                            (
+                              part: any,
+                            ): part is { type: "text"; text: string } =>
+                              part.type === "text",
                           )
-                          .map((part: { type: "text"; text: string }, index: number) => (
-                            <Streamdown
-                              key={index}
-                              isAnimating={status === "streaming"}>
-                              {part.text}
-                            </Streamdown>
-                          ))}
+                          .map(
+                            (
+                              part: { type: "text"; text: string },
+                              index: number,
+                            ) => (
+                              <Streamdown
+                                key={index}
+                                isAnimating={status === "streaming"}>
+                                {part.text}
+                              </Streamdown>
+                            ),
+                          )}
                       </div>
                     )}
                   </div>
                 </div>
               ))}
-              {isLoading && displayMessages[displayMessages.length - 1]?.role === "user" && (
-                <div className="flex justify-start">
-                  <div className="bg-background border border-border rounded-2xl px-4 py-2">
-                    <Loader2Icon className="w-4 h-4 animate-spin text-muted-foreground" />
+              {isLoading &&
+                displayMessages[displayMessages.length - 1]?.role ===
+                  "user" && (
+                  <div className="flex justify-start">
+                    <div className="bg-background border border-border rounded-2xl px-4 py-2">
+                      <Loader2Icon className="w-4 h-4 animate-spin text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -360,13 +294,13 @@ export default function Analysis() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your finances..."
-            disabled={status !== "ready" || !hasOpenRouterKey}
+            disabled={status !== "ready"}
             className="flex-1 bg-background border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
           />
           <Button
             type="submit"
             size="icon"
-            disabled={status !== "ready" || !hasOpenRouterKey || !input.trim()}
+            disabled={status !== "ready" || !input.trim()}
             className="rounded-full h-10 w-10 flex-shrink-0">
             {isLoading ? (
               <Loader2Icon className="w-4 h-4 animate-spin" />
@@ -378,4 +312,4 @@ export default function Analysis() {
       </div>
     </div>
   );
-};
+}

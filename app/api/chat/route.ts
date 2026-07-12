@@ -1,5 +1,6 @@
 import { convertToModelMessages, streamText, UIMessage } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { createChatGPTProxyProvider } from "@opencoredev/loginwithchatgpt-ai";
+import { auth } from "../chatgpt/[...lwc]/route";
 
 export const maxDuration = 30;
 
@@ -7,18 +8,11 @@ export async function POST(req: Request) {
   const {
     messages,
     transactions,
-    openRouterApiKey,
   }: {
     messages: UIMessage[];
     transactions: any[];
-    openRouterApiKey?: string;
   } = await req.json();
 
-  if (!openRouterApiKey) {
-    return new Response("Missing OpenRouter API key", { status: 401 });
-  }
-
-  // Calculate financial summary for context
   const totalExpense = transactions
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -27,16 +21,18 @@ export async function POST(req: Request) {
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const categoryBreakdown = transactions.reduce((acc, t) => {
-    if (!acc[t.category]) acc[t.category] = { expense: 0, income: 0 };
-    acc[t.category][t.type] += t.amount;
-    return acc;
-  }, {} as Record<string, { expense: number; income: number }>);
+  const categoryBreakdown = transactions.reduce(
+    (acc, t) => {
+      if (!acc[t.category]) acc[t.category] = { expense: 0, income: 0 };
+      acc[t.category][t.type] += t.amount;
+      return acc;
+    },
+    {} as Record<string, { expense: number; income: number }>,
+  );
 
-  // Get monthly data
   const currentMonth = new Date().getMonth();
   const thisMonthTransactions = transactions.filter(
-    (t) => new Date(t.date).getMonth() === currentMonth
+    (t) => new Date(t.date).getMonth() === currentMonth,
   );
 
   const thisMonthExpense = thisMonthTransactions
@@ -64,8 +60,8 @@ ${Object.entries(categoryBreakdown)
   .map(
     ([cat, data]: [string, any]) =>
       `- ${cat}: Spent $${data.expense.toFixed(
-        2
-      )}, Earned $${data.income.toFixed(2)}`
+        2,
+      )}, Earned $${data.income.toFixed(2)}`,
   )
   .join("\n")}
 
@@ -86,12 +82,12 @@ Guidelines:
 - When asked about trends, analyze the data provided
 - Format numbers as currency with $ sign`;
 
-  const openrouter = createOpenRouter({
-    apiKey: openRouterApiKey,
+  const chatgpt = createChatGPTProxyProvider({
+    fetch: auth.proxyFetch(req),
   });
 
   const result = streamText({
-    model: openrouter("z-ai/glm-4.5-air:free"),
+    model: chatgpt("gpt-5.5"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
   });
