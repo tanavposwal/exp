@@ -210,11 +210,9 @@ export default function Home() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-row gap-2 justify-end">
-            <DialogClose asChild>
-              <Button variant="outline">
-                <X />
-                Cancel
-              </Button>
+            <DialogClose render={<Button variant="outline" />}>
+              <X />
+              Cancel
             </DialogClose>
             <Button
               onClick={() =>

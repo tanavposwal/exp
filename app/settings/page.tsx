@@ -26,7 +26,8 @@ export default function SettingsPage() {
     setCurrency(getCurrencyCode());
   }, []);
 
-  const handleCurrencyChange = (value: CurrencyCode) => {
+  const handleCurrencyChange = (value: CurrencyCode | null) => {
+    if (!value) return;
     setCurrency(value);
     setCurrencyCode(value);
   };
@@ -54,7 +55,7 @@ export default function SettingsPage() {
           </Label>
           <Select value={currency} onValueChange={handleCurrencyChange}>
             <SelectTrigger id="currency" className="w-full">
-              <SelectValue placeholder="Select currency" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>

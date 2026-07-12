@@ -122,10 +122,8 @@ export default function FilterPage() {
             />
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size={"icon"}>
-                <ListFilterPlus />
-              </Button>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+              <ListFilterPlus />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80 p-4" align="end">
               <div className="space-y-4">
@@ -133,27 +131,29 @@ export default function FilterPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Date Range</Label>
                   <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !dateRange?.from && "text-muted-foreground"
-                        )}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange?.from ? (
-                          dateRange.to ? (
-                            <span>
-                              {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-                              {format(dateRange.to, "MMM dd, yyyy")}
-                            </span>
-                          ) : (
-                            format(dateRange.from, "MMM dd, yyyy")
-                          )
+                    <PopoverTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dateRange?.from && "text-muted-foreground"
+                          )}
+                        />
+                      }>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateRange?.from ? (
+                        dateRange.to ? (
+                          <span>
+                            {format(dateRange.from, "MMM dd, yyyy")} -{" "}
+                            {format(dateRange.to, "MMM dd, yyyy")}
+                          </span>
                         ) : (
-                          <span>Pick a date range</span>
-                        )}
-                      </Button>
+                          format(dateRange.from, "MMM dd, yyyy")
+                        )
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
                     </PopoverTrigger>
                     <PopoverContent
                       className="w-auto p-0 overflow-hidden"

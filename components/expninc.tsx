@@ -42,7 +42,7 @@ export default function Expninc({
         } ${mono.className}`}>
         {total < 0 ? "-" : ""}
         {cstr(currency)}
-        <NumberFlow value={total * -1} />
+        <NumberFlow value={Math.abs(total)} />
       </h2>
     </div>
   );

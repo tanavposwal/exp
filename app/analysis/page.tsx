@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, UIMessage } from "ai";
+import type { UIMessage } from "@ai-sdk/react";
 import {
   createChatGPTProxyProvider,
   ChatGPTProxyError,
