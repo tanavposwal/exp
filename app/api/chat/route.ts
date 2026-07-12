@@ -82,15 +82,29 @@ Guidelines:
 - When asked about trends, analyze the data provided
 - Format numbers as currency with $ sign`;
 
-  const chatgpt = createChatGPTProxyProvider({
-    fetch: auth.proxyFetch(req),
-  });
+  try {
+    const chatgpt = createChatGPTProxyProvider({
+      fetch: auth.proxyFetch(req),
+    });
 
-  const result = streamText({
-    model: chatgpt("gpt-5.5"),
-    system: systemPrompt,
-    messages: await convertToModelMessages(messages),
-  });
+    const result = streamText({
+      model: chatgpt("gpt-5.5"),
+      system: systemPrompt,
+      messages: await convertToModelMessages(messages),
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error: any) {
+    const status = error?.status ?? 500;
+    if (status === 401) {
+      return new Response(
+        JSON.stringify({ error: "Please sign in with ChatGPT first." }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+    return new Response(
+      JSON.stringify({ error: "Failed to get response. Please try again." }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
+  }
 }

@@ -2,36 +2,30 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, UIMessage } from "ai";
+import {
+  createChatGPTProxyProvider,
+  ChatGPTProxyError,
+} from "@opencoredev/loginwithchatgpt-ai";
 import { getTransactions, Transaction } from "@/utils/dataManager";
 import BackButton from "@/components/back-button";
 import { Button } from "@/components/ui/button";
 import { Streamdown } from "streamdown";
 import {
   SendIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
-  WalletIcon,
-  SparklesIcon,
   Loader2Icon,
-  MenuIcon,
   KeyRoundIcon,
   Trash2Icon,
   Key,
 } from "lucide-react";
-import { Geist_Mono } from "next/font/google";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { SignIn } from "@/components/sign-in";
-
-const mono = Geist_Mono({ subsets: ["latin"] });
 
 interface CategoryData {
   name: string;
@@ -47,50 +41,57 @@ const SUGGESTED_PROMPTS = [
   "Tips to save more",
 ];
 
+const chatgpt = createChatGPTProxyProvider();
+
+function getInitialMessages(): UIMessage[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = localStorage.getItem("chat_messages");
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function Analysis() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const [savedMessages, setSavedMessages] = useState<any[]>([]);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+    transport: new DefaultChatTransport({ api: "/api/chat" }),
+    messages: getInitialMessages(),
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("chat_messages");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setSavedMessages(parsed);
-      } catch (e) {
-        console.error("Failed to parse saved messages:", e);
-      }
-    }
-    setHasLoaded(true);
+    chatgpt
+      .listModels()
+      .then(() => setIsAuthenticated(true))
+      .catch((error) => {
+        if (
+          error instanceof ChatGPTProxyError &&
+          error.status === 401
+        ) {
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(false);
+        }
+      });
   }, []);
 
   useEffect(() => {
-    if (hasLoaded && messages.length > 0) {
+    if (messages.length > 0) {
       localStorage.setItem("chat_messages", JSON.stringify(messages));
     }
-  }, [messages, hasLoaded]);
+  }, [messages]);
 
   const clearMessages = () => {
     localStorage.removeItem("chat_messages");
-    setSavedMessages([]);
-    // Force a page reload to reset the chat state
     window.location.reload();
   };
-
-  // Use saved messages if we have them and no current messages
-  const displayMessages = messages.length > 0 ? messages : savedMessages;
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -124,7 +125,7 @@ export default function Analysis() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [displayMessages]);
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,7 +170,7 @@ export default function Analysis() {
         </h2>
 
         <div>
-          {displayMessages.length > 0 && (
+          {messages.length > 0 && (
             <Button
               variant="ghost"
               size="icon-sm"
@@ -200,115 +201,131 @@ export default function Analysis() {
       </div>
 
       <div className="flex-1 min-h-0 px-2 flex flex-col">
-        <div className="flex-1 min-h-0 space-y-3 overflow-y-auto">
-          {displayMessages.length === 0 ? (
-            <div className="text-center py-6">
-              <p className="text-sm text-muted-foreground mb-4">
-                Ask me anything about your finances!
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {SUGGESTED_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt}
-                    onClick={() => handleSuggestedPrompt(prompt)}
-                    disabled={status !== "ready"}
-                    className="text-xs px-3 py-1.5 bg-background hover:bg-background/80 rounded-full border border-border transition-colors disabled:opacity-50">
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>
-              {displayMessages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}>
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2 ${
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background"
-                    }`}>
-                    {message.role === "user" ? (
-                      <p className="text-sm whitespace-pre-wrap">
-                        {message.parts
-                          .filter(
-                            (
-                              part: any,
-                            ): part is { type: "text"; text: string } =>
-                              part.type === "text",
-                          )
-                          .map(
-                            (part: { type: "text"; text: string }) => part.text,
-                          )
-                          .join("")}
-                      </p>
-                    ) : (
-                      <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
-                        {message.parts
-                          .filter(
-                            (
-                              part: any,
-                            ): part is { type: "text"; text: string } =>
-                              part.type === "text",
-                          )
-                          .map(
-                            (
-                              part: { type: "text"; text: string },
-                              index: number,
-                            ) => (
-                              <Streamdown
-                                key={index}
-                                isAnimating={status === "streaming"}>
-                                {part.text}
-                              </Streamdown>
-                            ),
-                          )}
-                      </div>
-                    )}
+        {isAuthenticated === null ? (
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2Icon className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : !isAuthenticated ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4">
+            <KeyRoundIcon className="w-10 h-10 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground text-center">
+              Sign in with your ChatGPT account to start chatting.
+            </p>
+            <SignIn />
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 min-h-0 space-y-3 overflow-y-auto">
+              {messages.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Ask me anything about your finances!
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {SUGGESTED_PROMPTS.map((prompt) => (
+                      <button
+                        key={prompt}
+                        onClick={() => handleSuggestedPrompt(prompt)}
+                        disabled={status !== "ready"}
+                        className="text-xs px-3 py-1.5 bg-background hover:bg-background/80 rounded-full border border-border transition-colors disabled:opacity-50">
+                        {prompt}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              ))}
-              {isLoading &&
-                displayMessages[displayMessages.length - 1]?.role ===
-                  "user" && (
-                  <div className="flex justify-start">
-                    <div className="bg-background border border-border rounded-2xl px-4 py-2">
-                      <Loader2Icon className="w-4 h-4 animate-spin text-muted-foreground" />
+              ) : (
+                <div>
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        message.role === "user" ? "justify-end" : "justify-start"
+                      }`}>
+                      <div
+                        className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                          message.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-background"
+                        }`}>
+                        {message.role === "user" ? (
+                          <p className="text-sm whitespace-pre-wrap">
+                            {message.parts
+                              .filter(
+                                (
+                                  part: any,
+                                ): part is { type: "text"; text: string } =>
+                                  part.type === "text",
+                              )
+                              .map(
+                                (part: { type: "text"; text: string }) => part.text,
+                              )
+                              .join("")}
+                          </p>
+                        ) : (
+                          <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
+                            {message.parts
+                              .filter(
+                                (
+                                  part: any,
+                                ): part is { type: "text"; text: string } =>
+                                  part.type === "text",
+                              )
+                              .map(
+                                (
+                                  part: { type: "text"; text: string },
+                                  index: number,
+                                ) => (
+                                  <Streamdown
+                                    key={index}
+                                    isAnimating={status === "streaming"}>
+                                    {part.text}
+                                  </Streamdown>
+                                ),
+                              )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
+                  {isLoading &&
+                    messages[messages.length - 1]?.role ===
+                      "user" && (
+                      <div className="flex justify-start">
+                        <div className="bg-background border border-border rounded-2xl px-4 py-2">
+                          <Loader2Icon className="w-4 h-4 animate-spin text-muted-foreground" />
+                        </div>
+                      </div>
+                    )}
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
 
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="flex gap-2 shrink-0 pb-4">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about your finances..."
-            disabled={status !== "ready"}
-            className="flex-1 bg-background border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={status !== "ready" || !input.trim()}
-            className="rounded-full h-10 w-10 flex-shrink-0">
-            {isLoading ? (
-              <Loader2Icon className="w-4 h-4 animate-spin" />
-            ) : (
-              <SendIcon className="w-4 h-4" />
-            )}
-          </Button>
-        </form>
+            {/* Input */}
+            <form onSubmit={handleSubmit} className="flex gap-2 shrink-0 pb-4">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about your finances..."
+                disabled={status !== "ready"}
+                className="flex-1 bg-background border border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={status !== "ready" || !input.trim()}
+                className="rounded-full h-10 w-10 flex-shrink-0">
+                {isLoading ? (
+                  <Loader2Icon className="w-4 h-4 animate-spin" />
+                ) : (
+                  <SendIcon className="w-4 h-4" />
+                )}
+              </Button>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );
