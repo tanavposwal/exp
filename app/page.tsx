@@ -139,7 +139,10 @@ export default function Home() {
             aria-label="Filter">
             <FilterIcon className="h-4 w-4 text-foreground" />
           </Link>
-          <BottomNav editingTransaction={editingTransaction} onEditComplete={handleEditComplete} />
+          <BottomNav
+            editingTransaction={editingTransaction}
+            onEditComplete={handleEditComplete}
+          />
         </div>
       </div>
       <ul className="px-4">
@@ -149,7 +152,9 @@ export default function Home() {
           </div>
         ) : (
           [...transactions]
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+            )
             .map((transaction) => (
               <li
                 key={transaction.id}
@@ -164,10 +169,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-center">
                   <span
-                    className={`font-semibold mr-2 ${transaction.type === "expense"
-                      ? "text-red-600"
-                      : "text-green-600"
-                      }`}>
+                    className={`font-semibold mr-2 ${
+                      transaction.type === "expense"
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}>
                     {transaction.type === "expense" ? "-" : "+"}
                     {cstr(currency)}
                     {transaction.amount}
@@ -178,23 +184,12 @@ export default function Home() {
                       <EllipsisVerticalIcon className="h-4 w-4 outline-none" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="left">
-                      <DropdownMenuItem asChild>
-                        <Button 
-                          variant="ghost" 
-                          className="w-full cursor-pointer justify-start opacity-100 px-2.5" 
-                          onClick={() => handleEdit(transaction)}
-                        >
-                          Edit
-                        </Button>
+                      <DropdownMenuItem onClick={() => handleEdit(transaction)}>
+                        Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Button 
-                          variant="ghost" 
-                          className="w-full cursor-pointer justify-start opacity-45 hover:opacity-100 text-xs text-red-500"
-                          onClick={() => setDeletingTransaction(transaction)}
-                        >
-                          Delete
-                        </Button>
+                      <DropdownMenuItem
+                        onClick={() => setDeletingTransaction(transaction)}>
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -204,7 +199,9 @@ export default function Home() {
         )}
       </ul>
 
-      <Dialog open={!!deletingTransaction} onOpenChange={(open) => !open && setDeletingTransaction(null)}>
+      <Dialog
+        open={!!deletingTransaction}
+        onOpenChange={(open) => !open && setDeletingTransaction(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Transaction</DialogTitle>
@@ -220,7 +217,9 @@ export default function Home() {
               </Button>
             </DialogClose>
             <Button
-              onClick={() => deletingTransaction && handleDelete(deletingTransaction.id)}
+              onClick={() =>
+                deletingTransaction && handleDelete(deletingTransaction.id)
+              }
               variant="destructive">
               <Trash2 />
               Delete

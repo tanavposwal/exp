@@ -20,7 +20,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export default function SettingsPage() {
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme } = useTheme();
 
   useEffect(() => {
     setCurrency(getCurrencyCode());
@@ -33,11 +33,11 @@ export default function SettingsPage() {
 
   const handleThemeChange = () => {
     if (theme === "dark") {
-      setTheme("light")
+      setTheme("light");
     } else {
-      setTheme("dark")
+      setTheme("dark");
     }
-  }
+  };
 
   return (
     <div className="h-full w-full flex flex-col pt-4">
@@ -77,8 +77,6 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <a href="https://shoo.dev/authorize?redirect_uri=http://localhost:3000/success">Login</a>
-
         <div className="space-y-2">
           <Label className="text-sm font-medium">Theme</Label>
           <div className="flex items-center space-x-2">
@@ -87,10 +85,7 @@ export default function SettingsPage() {
               checked={theme === "dark"}
               onCheckedChange={handleThemeChange}
             />
-            <Label
-              htmlFor="dark-mode"
-              className="cursor-pointer"
-            >
+            <Label htmlFor="dark-mode" className="cursor-pointer">
               Dark mode
             </Label>
           </div>
