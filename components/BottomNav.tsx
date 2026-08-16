@@ -13,7 +13,10 @@ interface BottomNavProps {
   onEditComplete?: () => void;
 }
 
-export default function BottomNav({ editingTransaction, onEditComplete }: BottomNavProps) {
+export default function BottomNav({
+  editingTransaction,
+  onEditComplete,
+}: BottomNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const router = useRouter();
@@ -21,7 +24,7 @@ export default function BottomNav({ editingTransaction, onEditComplete }: Bottom
   useEffect(() => {
     if (editingTransaction) {
       setIsOpen(true);
-      setFormKey(prev => prev + 1);
+      setFormKey((prev) => prev + 1);
     }
   }, [editingTransaction]);
 
@@ -35,7 +38,7 @@ export default function BottomNav({ editingTransaction, onEditComplete }: Bottom
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
-      setFormKey(prev => prev + 1);
+      setFormKey((prev) => prev + 1);
       if (editingTransaction && onEditComplete) {
         onEditComplete();
       }
@@ -43,22 +46,24 @@ export default function BottomNav({ editingTransaction, onEditComplete }: Bottom
   };
 
   const handleTriggerClick = () => {
-    setFormKey(prev => prev + 1);
+    setFormKey((prev) => prev + 1);
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={handleOpenChange}>
-      <SheetTrigger asChild>
-        <button 
-          className="px-3 py-1 rounded-full from-black/60 to-black dark:from-white dark:to-neutral-400 bg-linear-to-br shadow"
-          onClick={handleTriggerClick}
-        >
-          <PlusIcon className="h-4 w-4 dark:text-black text-white" />
-        </button>
-      </SheetTrigger>
+      <SheetTrigger
+        render={
+          <button
+            className="px-3 py-1 rounded-full from-black/60 to-black dark:from-white dark:to-neutral-400 bg-linear-to-br shadow"
+            onClick={handleTriggerClick}>
+            <PlusIcon className="h-4 w-4 dark:text-black text-white" />
+          </button>
+        }
+      />
       <SheetContent
         side="bottom"
-        className="h-[60vh] max-w-md mx-auto rounded-t-2xl overflow-y-auto scrollbar-none">
+        className="h-[60vh] max-w-md mx-auto rounded-t-2xl overflow-y-auto scrollbar-none p-5"
+        showCloseButton={false}>
         {editingTransaction ? (
           <TransactionForm
             key={`edit-${editingTransaction.id}`}
@@ -67,26 +72,26 @@ export default function BottomNav({ editingTransaction, onEditComplete }: Bottom
           />
         ) : (
           <Tabs defaultValue="expense" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="expense" className="text-sm py-2">
+            <TabsList className="grid w-full grid-cols-2 mb-6 h-10!">
+              <TabsTrigger value="expense" className="text-sm">
                 Expense
               </TabsTrigger>
-              <TabsTrigger value="income" className="text-sm py-2">
+              <TabsTrigger value="income" className="text-sm">
                 Income
               </TabsTrigger>
             </TabsList>
             <TabsContent value="expense">
-              <TransactionForm 
+              <TransactionForm
                 key={`expense-${formKey}`}
-                type="expense" 
-                onClose={handleClose} 
+                type="expense"
+                onClose={handleClose}
               />
             </TabsContent>
             <TabsContent value="income">
-              <TransactionForm 
+              <TransactionForm
                 key={`income-${formKey}`}
-                type="income" 
-                onClose={handleClose} 
+                type="income"
+                onClose={handleClose}
               />
             </TabsContent>
           </Tabs>

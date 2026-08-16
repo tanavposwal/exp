@@ -133,13 +133,15 @@ export default function TransactionForm({
       <div>
         <Label className="text-xs font-medium">Date</Label>
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={`w-full justify-start text-left font-normal mt-1 text-md py-3`}>
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal mt-1 text-md py-3"
+              />
+            }>
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, "PPP") : <span>Pick a date</span>}
           </PopoverTrigger>
           <PopoverContent className="w-auto overflow-hidden p-1" align="start">
             <Calendar

@@ -3,7 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import { Instrument_Serif } from "next/font/google";
 import { cstr, CurrencyCode } from "@/lib/currency";
 import { getCurrencyCode } from "@/utils/dataManager";
-import NumberFlow from '@number-flow/react'
+import NumberFlow from "@number-flow/react";
 
 const mono = Geist_Mono({ subsets: ["latin"] });
 const serif = Instrument_Serif({ subsets: ["latin"], weight: "400" });
@@ -37,10 +37,12 @@ export default function Expninc({
         Total balance
       </p>
       <h2
-        className={`text-4xl font-semibold transition-all select-none ${total < 0 ? "text-red-500" : ""
-          } ${mono.className}`}>
+        className={`text-4xl font-semibold transition-all select-none ${
+          total < 0 ? "text-red-500" : ""
+        } ${mono.className}`}>
+        {total < 0 ? "-" : ""}
         {cstr(currency)}
-        <NumberFlow value={total} />
+        <NumberFlow value={Math.abs(total)} />
       </h2>
     </div>
   );

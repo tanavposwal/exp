@@ -97,11 +97,9 @@ function CardExample() {
         </CardHeader>
         <CardFooter>
           <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button>
-                <PlusIcon data-icon="inline-start" />
-                Show Dialog
-              </Button>
+            <AlertDialogTrigger render={<Button />}>
+              <PlusIcon data-icon="inline-start" />
+              Show Dialog
             </AlertDialogTrigger>
             <AlertDialogContent size="sm">
               <AlertDialogHeader>
@@ -152,15 +150,13 @@ function FormExample() {
         <CardHeader>
           <CardTitle>User Information</CardTitle>
           <CardDescription>Please fill in your details below</CardDescription>
-          <CardAction>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVerticalIcon
-                  />
-                  <span className="sr-only">More options</span>
-                </Button>
-              </DropdownMenuTrigger>
+        <CardAction>
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+              <MoreVerticalIcon
+              />
+              <span className="sr-only">More options</span>
+            </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>File</DropdownMenuLabel>
@@ -438,7 +434,7 @@ function FormExample() {
                   <FieldLabel htmlFor="small-form-role">Role</FieldLabel>
                   <Select defaultValue="">
                     <SelectTrigger id="small-form-role">
-                      <SelectValue placeholder="Select a role" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
